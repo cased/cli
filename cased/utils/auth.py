@@ -8,7 +8,6 @@ TOKEN_FILE = os.path.join(CONFIG_DIR, "session_token")
 
 
 def get_token():
-    # Note we may want to add encryption/decryption to the token file
     if os.path.exists(TOKEN_FILE):
         with open(TOKEN_FILE, "r") as f:
             data = json.load(f)
