@@ -1,11 +1,11 @@
 import requests
 import click
+import os
 
-API_BASE_URL = "https://api.cased.com"
+API_BASE_URL = os.getenv("CASED_API_BASE_URL", "https://api.cased.com")
 
 
 def get_branches():
-    return ["main", "dev", "feature-1", "feature-2"]
     response = requests.get(f"{API_BASE_URL}/branches")
     if response.status_code == 200:
         return response.json()
@@ -15,7 +15,6 @@ def get_branches():
 
 
 def get_targets():
-    return ["production", "staging", "development"]
     response = requests.get(f"{API_BASE_URL}/targets")
     if response.status_code == 200:
         return response.json()
