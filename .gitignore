@@ -1,1 +1,6 @@
+# .gitignore
+.egg-info/
+env/
+.env/
+venv/
 .DS_STORE
