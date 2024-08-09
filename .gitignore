@@ -1,1 +1,7 @@
+# .gitignore
+_pycache_/
+.egg-info/
+env/
+.env/
+venv/
 .DS_STORE
