@@ -41,7 +41,6 @@ def get_deployments():
         return response.json()
     else:
         click.echo("Failed to fetch deployments. Please try again.")
-        click.echo(f"Org id: {os.environ.get('CASED_API_ORG_ID')}")
         return []
 
 
