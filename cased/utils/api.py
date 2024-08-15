@@ -45,14 +45,16 @@ def get_deployments():
         return []
 
 
-def deploy_branch(branch, target):
+def deploy_branch(branch_name, target_name):
     # Implement branch deployment logic here
     response = requests.post(
-        f"{API_BASE_URL}/deploy",
-        json={"target": target, "branch": branch},
+        f"{API_BASE_URL}/branch-deploys/",
+        json={"branch_name": branch_name, "target_name": target_name},
         headers=REQUEST_HEADERS,
     )
     if response.status_code == 200:
-        click.echo(f"Successfully deployed branch '{branch}' to target '{target}'!")
+        click.echo(
+            f"Successfully deployed branch '{branch_name}' to target '{target_name}'!"
+        )
     else:
         click.echo("Deployment failed. Please check your input and try again.")

@@ -2,40 +2,13 @@ import time
 import click
 from rich.console import Console
 from rich.progress import Progress
-import random
 import questionary
 
 from cased.utils.auth import get_token
+from cased.utils.api import get_branches, deploy_branch
+from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
-
-
-def get_deployable_branches():
-    # Simulate fetching deployable branches with their available targets
-    branches = [
-        {"name": "feature-branch-1", "targets": ["dev", "staging"]},
-        {"name": "feature-branch-2", "targets": ["dev", "staging", "prod"]},
-        {"name": "feature-branch-3", "targets": ["dev"]},
-        {"name": "main", "targets": ["dev", "staging", "prod"]},
-        {"name": "hotfix-branch", "targets": ["staging", "prod"]},
-    ]
-    return branches
-
-
-def simulate_api_call(branch, target):
-    time.sleep(1)  # Simulate network delay
-    return random.choice(["dispatch succeeded", "failed"])
-
-
-def run_deployment(branch, target):
-    with Progress() as progress:
-        deploy_task = progress.add_task(
-            f"[green]Deploying {branch} to {target}...", total=100
-        )
-        while not progress.finished:
-            progress.update(deploy_task, advance=0.5)
-            time.sleep(0.1)
-    console.print(f"[green]Deployment of {branch} to {target} completed successfully!")
 
 
 @click.command()
@@ -60,12 +33,17 @@ def deploy(branch, target):
         console.print("[red]Please log in first using 'cased login'[/red]")
         return
 
-    deployable_branches = get_deployable_branches()
-
     if not branch:
+        data = run_process_with_status_bar(
+            get_branches, "Fetching branches...", timeout=10, target_name="prod"
+        )
+        branches = data.get("pull_requests", [])
+        deployable_branches = [
+            branch for branch in branches if branch["deployable"] == True
+        ]
         # Prepare choices for questionary
         choices = [
-            f"{b['name']} -> [{', '.join(b['targets'])}]" for b in deployable_branches
+            f"{b['branch_name']} -> [{', '.join([target["name"] for target in b.get("targets", [])])}]" for b in deployable_branches
         ]
 
         if not choices:
@@ -80,7 +58,7 @@ def deploy(branch, target):
 
     # Find the selected branch in our data
     selected_branch = next(
-        (b for b in deployable_branches if b["name"] == branch), None
+        (b for b in deployable_branches if b["branch_name"] == branch), None
     )
     if not selected_branch:
         console.print(f"[red]Error: Branch '{branch}' is not deployable.[/red]")
@@ -106,11 +84,8 @@ def deploy(branch, target):
         f"Preparing to deploy [cyan]{branch}[/cyan] to [yellow]{target}[/yellow]"
     )
 
-    # Simulate API call
-    result = simulate_api_call(branch, target)
-
-    if result == "dispatch succeeded":
+    if branch and target:
+        deploy_branch(branch, target)
         console.print("[green]Dispatch succeeded. Starting deployment...[/green]")
-        run_deployment(branch, target)
     else:
         console.print("[red]Deployment dispatch failed. Please try again later.[/red]")
