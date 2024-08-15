@@ -2,11 +2,13 @@ import click
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
-from datetime import datetime, timedelta
+from dateutil import parser
 import random
 
 
 from cased.utils.auth import get_token
+from cased.utils.api import get_branches, get_targets, get_deployments
+from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 
@@ -37,26 +39,31 @@ def deployments(limit):
     table.add_column("Target", style="blue")
     table.add_column("View", style="cyan")
 
+    data = get_deployments().get("deployments", [])
+
     deployments_data = []
-    for _ in range(limit):
-        begin_time = datetime.now() - timedelta(hours=random.randint(1, 48))
+    for idx, deployment in enumerate(data):
+        if idx == limit:
+            break
+        begin_time = parser.parse(deployment.get("start_time"))
         end_time = (
-            begin_time + timedelta(hours=random.randint(1, 4))
-            if random.choice([True, False])
+            parser.parse(deployment.get("end_time"))
+            if deployment.get("end_time")
             else None
         )
-        status = random.choice(["pending", "running", "success", "failed", "canceled"])
-        deployment_id = random.randint(1000, 9999)
+        status = deployment.get("status", "Unknown")
+        deployment_id = deployment.get("id")
         view_url = f"https://cased.com/deployments/{deployment_id}"
+        deployer_full_name = f"{deployment.get("deployer").get("first_name")} {deployment.get("deployer").get("last_name")}" if deployment.get("deployer") else "Unknown"
 
         deployments_data.append(
             {
                 "begin_time": begin_time,
                 "end_time": end_time,
-                "deployer": f"user{random.randint(1, 100)}@example.com",
+                "deployer": deployer_full_name,
                 "status": status,
-                "branch": f"feature-branch-{random.randint(1, 100)}",
-                "target": f"env-{random.choice(['prod', 'staging', 'dev'])}",
+                "branch": deployment.get("ref").replace("refs/heads/", ""),
+                "target": deployment.get("target").get("name"),
                 "view": (deployment_id, view_url),
             }
         )
@@ -108,31 +115,28 @@ def branches(limit):
     table.add_column("PR Number", style="yellow")
     table.add_column("PR Title", style="green")
     table.add_column("Deployable", style="blue")
-    table.add_column("Deploy Checks", style="cyan")
     table.add_column("Mergeable", style="blue")
-    table.add_column("Merge Checks", style="cyan")
-
+    table.add_column("Checks", style="cyan")
+    
+    data = run_process_with_status_bar(get_branches, "Fetching branches...", timeout=10, target_name="prod")
+    branches = data.get("pull_requests", [])
     # Generate fake data
-    for _ in range(limit):
-        pr_number = random.randint(100, 999) if random.choice([True, False]) else None
+    for idx, branch in enumerate(branches):
+        if idx == limit:
+            break
 
         table.add_row(
-            f"feature-branch-{random.randint(1, 100)}",
-            f"user{random.randint(1, 100)}@example.com",
-            str(pr_number) if pr_number else "NULL",
-            f"Implement new feature #{random.randint(1, 100)}" if pr_number else "NULL",
-            random.choice(["Yes", "No"]),
+            branch.get("branch_name"),
+            branch.get("owner"),
+            str(branch.get("number")),
+            branch.get("title"),
+            str(branch.get("deployable")),
+            str(branch.get("mergeable")),
             ", ".join(
                 [
-                    f"{check}:{random.choice(['✓', '✗'])}"
-                    for check in ["lint", "test", "build"]
-                ]
-            ),
-            random.choice(["Yes", "No"]),
-            ", ".join(
-                [
-                    f"{check}:{random.choice(['✓', '✗'])}"
-                    for check in ["conflicts", "approvals", "checks"]
+                    f"approved: {branch.get("approved")}",
+                    f"up-to-date: {branch.get("up_to_date")}",
+                    f"checks-passed: {branch.get("checks_passing")}",
                 ]
             ),
         )

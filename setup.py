@@ -19,6 +19,7 @@ setup(
         "requests",
         "rich",
         "questionary",
+        "python-dateutil",
     ],
     entry_points={
         "console_scripts": [
