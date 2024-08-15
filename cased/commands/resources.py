@@ -48,7 +48,7 @@ def deployments(limit):
         end_time = (
             parser.parse(deployment.get("end_time"))
             if deployment.get("end_time")
-            else None
+            else ""
         )
         status = deployment.get("status", "Unknown")
         deployment_id = deployment.get("id")
