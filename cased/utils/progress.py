@@ -44,5 +44,8 @@ def run_process_with_status_bar(
                 console.print(
                     f"\n[bold red]Process timed out after {timeout} seconds. Please try again later."
                 )
+            except Exception as e:
+                progress.update(task, description="[bold red]Error!")
+                console.print(f"\n[bold red]Error: {e}")
 
     return result
