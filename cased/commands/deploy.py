@@ -10,6 +10,50 @@ from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 
+def _build_questionary_choices():
+    data = run_process_with_status_bar(
+        get_branches, "Fetching branches...", timeout=10
+    )
+    branches = data.get("pull_requests", [])
+    deployable_branches = [
+        branch for branch in branches if branch["deployable"] == True
+    ]
+    # Prepare choices for questionary
+    choices = [
+        f"{b['branch_name']} -> [{', '.join([target["name"] for target in b.get("targets", [])])}]" for b in deployable_branches
+    ]
+
+    if not choices:
+        console.print("[red]No deployable branches available.[/red]")
+        return
+
+    selected = questionary.select(
+        "Select a branch to deploy:", choices=choices
+    ).ask()
+
+    branch = selected.split(" -> ")[0]
+
+    # Find the selected branch in our data
+    selected_branch = next(
+        (b for b in deployable_branches if b["branch_name"] == branch), None
+    )
+    if not selected_branch:
+        console.print(f"[red]Error: Branch '{branch}' is not deployable.[/red]")
+        return
+
+    available_targets = selected_branch["targets"]
+    if not available_targets:
+        console.print(
+            f"[red]Error: No targets available for branch '{branch}'.[/red]"
+        )
+        return
+    target = questionary.select(
+        "Select a target environment:", choices=available_targets
+    ).ask()
+
+    
+    return branch, target
+
 
 @click.command()
 @click.option("--branch", help="Branch to deploy")
@@ -33,52 +77,8 @@ def deploy(branch, target):
         console.print("[red]Please log in first using 'cased login'[/red]")
         return
 
-    if not branch:
-        data = run_process_with_status_bar(
-            get_branches, "Fetching branches...", timeout=10, target_name="prod"
-        )
-        branches = data.get("pull_requests", [])
-        deployable_branches = [
-            branch for branch in branches if branch["deployable"] == True
-        ]
-        # Prepare choices for questionary
-        choices = [
-            f"{b['branch_name']} -> [{', '.join([target["name"] for target in b.get("targets", [])])}]" for b in deployable_branches
-        ]
-
-        if not choices:
-            console.print("[red]No deployable branches available.[/red]")
-            return
-
-        selected = questionary.select(
-            "Select a branch to deploy:", choices=choices
-        ).ask()
-
-        branch = selected.split(" -> ")[0]
-
-    # Find the selected branch in our data
-    selected_branch = next(
-        (b for b in deployable_branches if b["branch_name"] == branch), None
-    )
-    if not selected_branch:
-        console.print(f"[red]Error: Branch '{branch}' is not deployable.[/red]")
-        return
-
-    if not target:
-        available_targets = selected_branch["targets"]
-        if not available_targets:
-            console.print(
-                f"[red]Error: No targets available for branch '{branch}'.[/red]"
-            )
-            return
-        target = questionary.select(
-            "Select a target environment:", choices=available_targets
-        ).ask()
-    elif target not in selected_branch["targets"]:
-        console.print(
-            f"[red]Error: Target '{target}' is not available for branch '{branch}'.[/red]"
-        )
-        return
+    if not branch and not target:
+        branch, target = _build_questionary_choices()
 
     console.print(
         f"Preparing to deploy [cyan]{branch}[/cyan] to [yellow]{target}[/yellow]"

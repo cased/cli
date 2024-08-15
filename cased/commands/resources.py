@@ -117,7 +117,7 @@ def branches(limit):
     table.add_column("Mergeable", style="blue")
     table.add_column("Checks", style="cyan")
     
-    data = run_process_with_status_bar(get_branches, "Fetching branches...", timeout=10, target_name="prod")
+    data = run_process_with_status_bar(get_branches, "Fetching branches...", timeout=10)
     branches = data.get("pull_requests", [])
     # Generate fake data
     for idx, branch in enumerate(branches):
