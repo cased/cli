@@ -6,3 +6,4 @@ env/
 .env/
 venv/
 .DS_STORE
+.pre-commit-config.yaml
