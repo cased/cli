@@ -1,12 +1,11 @@
 import click
+from dateutil import parser
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
-from dateutil import parser
 
-
+from cased.utils.api import get_branches, get_deployments
 from cased.utils.auth import get_token
-from cased.utils.api import get_branches, get_targets, get_deployments
 from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
@@ -53,7 +52,11 @@ def deployments(limit):
         status = deployment.get("status", "Unknown")
         deployment_id = deployment.get("id")
         view_url = f"https://cased.com/deployments/{deployment_id}"
-        deployer_full_name = f"{deployment.get("deployer").get("first_name")} {deployment.get("deployer").get("last_name")}" if deployment.get("deployer") else "Unknown"
+        deployer_full_name = (
+            f"{deployment.get('deployer').get('first_name')} {deployment.get('deployer').get('last_name')}"  # noqa: E501
+            if deployment.get("deployer")
+            else "Unknown"
+        )
 
         deployments_data.append(
             {
@@ -116,7 +119,7 @@ def branches(limit):
     table.add_column("Deployable", style="blue")
     table.add_column("Mergeable", style="blue")
     table.add_column("Checks", style="cyan")
-    
+
     data = run_process_with_status_bar(get_branches, "Fetching branches...", timeout=10)
     branches = data.get("pull_requests", [])
     # Generate fake data
@@ -133,9 +136,9 @@ def branches(limit):
             str(branch.get("mergeable")),
             ", ".join(
                 [
-                    f"approved: {branch.get("approved")}",
-                    f"up-to-date: {branch.get("up_to_date")}",
-                    f"checks-passed: {branch.get("checks_passing")}",
+                    f"approved: {branch.get('approved')}",
+                    f"up-to-date: {branch.get('up_to_date')}",
+                    f"checks-passed: {branch.get('checks_passing')}",
                 ]
             ),
         )

@@ -1,6 +1,7 @@
-import requests
-import click
 import os
+
+import click
+import requests
 
 API_BASE_URL = os.environ.get(
     "CASED_API_BASE_URL", default="https://app.cased.com/api/v1"

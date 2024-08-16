@@ -1,14 +1,15 @@
+import json
+import os
+import random
+import stat
+import tempfile
 import time
+from datetime import datetime, timedelta
+
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress
-import os
-import json
-from datetime import datetime, timedelta
-import random
-import tempfile
-import stat
 
 from cased.utils.auth import CONFIG_DIR, TOKEN_FILE
 
@@ -44,7 +45,7 @@ def create_temp_token_file(token_data):
 
     # Schedule file for deletion after 24 hours
     deletion_time = datetime.now() + timedelta(hours=24)
-    deletion_command = f"(sleep {(deletion_time - datetime.now()).total_seconds()} && rm -f {temp_file.name}) &"
+    deletion_command = f"(sleep {(deletion_time - datetime.now()).total_seconds()} && rm -f {temp_file.name}) &"  # noqa: E501
     os.system(deletion_command)
 
     return temp_file.name
@@ -86,7 +87,7 @@ def login():
 
     console.print(
         Panel(
-            f"[green]Login successful![/green]\nSession token stored securely.\nSession expires in {hours} hours {minutes} minutes.",
+            f"[green]Login successful![/green]\nSession token stored securely.\nSession expires in {hours} hours {minutes} minutes.",  # noqa: E501
             title="Login Status",
         )
     )
@@ -120,7 +121,7 @@ def logout():
     else:
         console.print(
             Panel(
-                "[yellow]No active session found.[/yellow]\nYou are already logged out.",
+                "[yellow]No active session found.[/yellow]\nYou are already logged out.",  # noqa: E501
                 title="Logout Status",
             )
         )
