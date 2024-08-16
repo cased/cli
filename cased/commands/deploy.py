@@ -1,35 +1,31 @@
-import time
 import click
-from rich.console import Console
-from rich.progress import Progress
 import questionary
+from rich.console import Console
 
+from cased.utils.api import deploy_branch, get_branches
 from cased.utils.auth import get_token
-from cased.utils.api import get_branches, deploy_branch
 from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 
+
 def _build_questionary_choices():
-    data = run_process_with_status_bar(
-        get_branches, "Fetching branches...", timeout=10
-    )
+    data = run_process_with_status_bar(get_branches, "Fetching branches...", timeout=10)
     branches = data.get("pull_requests", [])
     deployable_branches = [
-        branch for branch in branches if branch["deployable"] == True
+        branch for branch in branches if branch["deployable"] is True
     ]
     # Prepare choices for questionary
     choices = [
-        f"{b['branch_name']} -> [{', '.join([target["name"] for target in b.get("targets", [])])}]" for b in deployable_branches
+        f"{b['branch_name']} -> [{', '.join([target.get('name') for target in b.get('targets', [])])}]"  # noqa: E501
+        for b in deployable_branches
     ]
 
     if not choices:
         console.print("[red]No deployable branches available.[/red]")
         return
 
-    selected = questionary.select(
-        "Select a branch to deploy:", choices=choices
-    ).ask()
+    selected = questionary.select("Select a branch to deploy:", choices=choices).ask()
 
     branch = selected.split(" -> ")[0]
 
@@ -38,20 +34,17 @@ def _build_questionary_choices():
         (b for b in deployable_branches if b["branch_name"] == branch), None
     )
     if not selected_branch:
-        console.print(f"[red]Error: Branch '{branch}' is not deployable.[/red]")
+        console.print(f"[red]Error: Branch {branch} is not deployable.[/red]")
         return
 
     available_targets = selected_branch["targets"]
     if not available_targets:
-        console.print(
-            f"[red]Error: No targets available for branch '{branch}'.[/red]"
-        )
+        console.print(f"[red]Error: No targets available for branch {branch}.[/red]")
         return
     target = questionary.select(
         "Select a target environment:", choices=available_targets
     ).ask()
 
-    
     return branch, target
 
 
@@ -71,7 +64,7 @@ def deploy(branch, target):
     Examples:
         cased deploy
         cased deploy --branch feature-branch-1 --target dev
-    """
+    """  # noqa: E501
     token = get_token()
     if not token:
         console.print("[red]Please log in first using 'cased login'[/red]")

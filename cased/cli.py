@@ -1,7 +1,8 @@
 import click
+
 from cased.commands.deploy import deploy
 from cased.commands.login import login, logout
-from cased.commands.resources import deployments, branches
+from cased.commands.resources import branches, deployments
 
 
 @click.group()

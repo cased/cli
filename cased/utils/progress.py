@@ -1,8 +1,9 @@
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from typing import Any, Callable
+
 from rich.console import Console
 from rich.progress import Progress
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
-from typing import Callable, Any
 
 
 def run_process_with_status_bar(
@@ -42,7 +43,7 @@ def run_process_with_status_bar(
             except TimeoutError:
                 progress.update(task, description="[bold red]Timeout!")
                 console.print(
-                    f"\n[bold red]Process timed out after {timeout} seconds. Please try again later."
+                    f"\n[bold red]Process timed out after {timeout} seconds. Please try again later."  # noqa: E501
                 )
             except Exception as e:
                 progress.update(task, description="[bold red]Error!")
