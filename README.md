@@ -22,19 +22,6 @@ pip install cased
 
 This will install the latest version of the tool from PyPI.
 
-For development installation:
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/cased/csd.git
-   cd csd
-   ```
-
-2. Install in editable mode:
-   ```
-   pip install -e .
-   ```
-
 ## Usage
 
 After installation, you can use the CLI tool by running `cased` followed by a command:
@@ -56,6 +43,65 @@ For more details on each command, use:
 ```
 cased COMMAND --help
 ```
+
+## Development
+
+To set up the Cased CLI for development:
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/cased/csd.git
+   cd csd
+   ```
+
+2. Install Poetry (if not already installed):
+   ```
+   pip install poetry
+   ```
+
+3. Install dependencies:
+   ```
+   poetry install
+   ```
+
+4. Activate the virtual environment:
+   ```
+   poetry shell
+   ```
+
+5. Run the CLI in development mode:
+   ```
+   poetry run cased
+   ```
+
+### Making Changes
+
+1. Make your changes to the codebase.
+2. Update tests if necessary.
+3. Run tests:
+   ```
+   poetry run pytest
+   ```
+4. Build the package:
+   ```
+   poetry build
+   ```
+
+### Submitting Changes
+
+1. Create a new branch for your changes:
+   ```
+   git checkout -b feature/your-feature-name
+   ```
+2. Commit your changes:
+   ```
+   git commit -am "Add your commit message"
+   ```
+3. Push to your branch:
+   ```
+   git push origin feature/your-feature-name
+   ```
+4. Create a pull request on GitHub.
 
 ## Contact
 
