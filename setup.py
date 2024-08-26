@@ -20,6 +20,8 @@ setup(
         "rich",
         "questionary",
         "python-dateutil",
+        "inquirer",
+        "PyYAML",
     ],
     entry_points={
         "console_scripts": [
