@@ -50,8 +50,8 @@ To set up the Cased CLI for development:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/cased/csd.git
-   cd csd
+   git clone https://github.com/cased/cli.git
+   cd cli
    ```
 
 2. Install Poetry (if not already installed):
