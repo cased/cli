@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "cased"
+version = "0.1.0"
+description = "A CLI tool for managing deployments and branches"
+authors = ["Cased <cli@cased.com>"]
+readme = "README.md"
+repository = "https://github.com/cased/cli"
+packages = [{include = "cased"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+click = "*"
+requests = "*"
+rich = "*"
+questionary = "*"
+python-dateutil = "*"
+pyyaml = "^6.0.2"
+inquirer = "^3.4.0"
+
+[tool.poetry.scripts]
+cased = "cased.cli:cli"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.8.0"
+ruff = "^0.6.2"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.urls]
+"Homepage" = "https://github.com/cased/csd"

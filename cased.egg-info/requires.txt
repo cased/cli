@@ -1,0 +1,7 @@
+click
+requests
+rich
+questionary
+python-dateutil
+inquirer
+PyYAML
