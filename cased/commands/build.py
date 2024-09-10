@@ -81,7 +81,7 @@ def build() -> None:
             [bold green]GitHub Actions workflow generated successfully![/bold green]
             [bold green]Please complete the following steps for the workflow to work correctly: [/bold green]
             1. Review the generated workflow file in .github/workflows/deploy.yaml
-            2. Going to {API_BASE_URL}/secrets/{project_name} to update the secrets.
+            2. Go to {API_BASE_URL}/secrets/{project_name} to update the secrets.
             3. Commit the changes to your repository, and the workflow will be triggered.
             4. Go to {API_BASE_URL}/deployments/ to monitor the deployment status.
             """,  # noqa: E501
