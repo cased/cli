@@ -81,7 +81,7 @@ custom_style = Style(
     default=True,
     help="Show detailed information about projects",
 )
-@validate_credentials
+@validate_credentials(check_project_set=False)
 def projects(details=True):
     """
     Display and select Cased projects.

@@ -1,3 +1,35 @@
+"""
+Cased CLI Authentication Module
+
+This module provides command-line interface (CLI) functionality for authenticating
+with the Cased system. It includes commands for logging in and out of the Cased
+CLI, handling API key validation, and managing user sessions.
+
+Dependencies:
+    - click: For creating CLI commands
+    - rich: For enhanced console output and user interaction
+    - cased: Custom package for Cased-specific functionality
+
+Commands:
+    - login: Initiates the login process, validates credentials, and stores session information
+    - logout: Removes locally stored credentials and logs the user out of the Cased CLI
+
+The module uses the Rich library to provide a visually appealing and interactive
+console interface, including progress bars and styled text output.
+
+Usage:
+    To use this module, import it into your main CLI application and add the
+    login and logout commands to your command group.
+
+Note:
+    This module assumes the existence of various utility functions and constants
+    from the cased package, which should be properly set up for the module to function correctly.
+
+Author: Cased
+Date: 10/01/2024
+Version: 1.0
+"""
+
 import click
 from rich.console import Console
 from rich.panel import Panel
