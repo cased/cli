@@ -29,7 +29,7 @@ Dependencies:
 
 Author: Cased
 Date: 10/01/2024
-Version: 1.0
+Version: 1.0.0
 """  # noqa: E501
 
 import click

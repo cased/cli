@@ -27,7 +27,7 @@ Note:
 
 Author: Cased
 Date: 10/01/2024
-Version: 1.0
+Version: 1.0.0
 """
 
 import click
@@ -116,7 +116,7 @@ def login():
 
 
 @click.command()
-@validate_credentials
+@validate_credentials(check_project_set=False)
 def logout():
     """
     Log out from your Cased account.
