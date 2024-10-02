@@ -30,7 +30,6 @@ class CasedAPI:
 
     def get_branches(self, project_name, target_name):
         query_params = {"project_name": project_name, "target_name": target_name}
-        print(query_params)
         response = requests.get(
             f"{CasedConstants.API_BASE_URL}/branches",
             headers=self.request_headers,
@@ -71,7 +70,6 @@ class CasedAPI:
             headers=self.request_headers,
         )
         if response.status_code == 200:
-            print(response.json())
             return response.json()
         else:
             click.echo("Failed to fetch deployments. Please try again.")
