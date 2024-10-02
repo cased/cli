@@ -111,7 +111,6 @@ def projects(details=True):
     ]
 
     if details:
-        # Create a table to display projects
         table = Table(title="Projects Details", box=box.ROUNDED)
         table.add_column("ID", style="cyan", no_wrap=True)
         table.add_column("Repository", style="magenta")
@@ -139,7 +138,6 @@ def projects(details=True):
         console.print(
             "[yellow]No project selected. Please select a project from the list below:[/yellow]"
         )
-    # Prepare choices for questionary
     choices = ["Exit without changing project"]
     choices.extend(
         [
@@ -148,7 +146,6 @@ def projects(details=True):
         ]
     )
 
-    # Prompt user for selection using questionary
     try:
         selection = questionary.select(
             "Select a project:", choices=choices, style=custom_style
