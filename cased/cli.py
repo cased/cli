@@ -30,8 +30,6 @@ cli.add_command(branches)
 cli.add_command(projects)
 cli.add_command(targets)
 
-# ... (keep the login and setup_target commands as they were) ...
-
 
 if __name__ == "__main__":
     cli()
