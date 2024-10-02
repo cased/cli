@@ -4,16 +4,14 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
-        exclude: "^comet/core/migrations/.*"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.0.291
     hooks:
       - id: ruff
-        exclude: "^comet/core/migrations/.*"
+        args: [--line-length=100]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-        exclude: "^comet/core/migrations/.*"

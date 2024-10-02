@@ -2,15 +2,18 @@ import click
 import questionary
 from rich.console import Console
 
-from cased.utils.api import deploy_branch, get_branches
-from cased.utils.auth import get_token
+from cased.utils.api import CasedAPI
+from cased.utils.auth import validate_credentials
 from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 
 
 def _build_questionary_choices():
-    data = run_process_with_status_bar(get_branches, "Fetching branches...", timeout=10)
+    api_client = CasedAPI()
+    data = run_process_with_status_bar(
+        api_client.get_branches, "Fetching branches...", timeout=10
+    )
     branches = data.get("pull_requests", [])
     deployable_branches = [
         branch for branch in branches if branch["deployable"] is True
@@ -51,6 +54,7 @@ def _build_questionary_choices():
 @click.command()
 @click.option("--branch", help="Branch to deploy")
 @click.option("--target", help="Target environment for deployment")
+@validate_credentials(check_project_set=False)
 def deploy(branch, target):
     """
     Deploy a branch to a target environment.
@@ -65,11 +69,6 @@ def deploy(branch, target):
         cased deploy
         cased deploy --branch feature-branch-1 --target dev
     """  # noqa: E501
-    token = get_token()
-    if not token:
-        console.print("[red]Please log in first using 'cased login'[/red]")
-        return
-
     if not branch and not target:
         branch, target = _build_questionary_choices()
 
@@ -78,7 +77,7 @@ def deploy(branch, target):
     )
 
     if branch and target:
-        deploy_branch(branch, target)
+        CasedAPI().deploy_branch(branch, target)
         console.print("[green]Dispatch succeeded. Starting deployment...[/green]")
     else:
         console.print("[red]Deployment dispatch failed. Please try again later.[/red]")
