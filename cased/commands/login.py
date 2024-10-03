@@ -1,54 +1,48 @@
-import json
-import os
-import random
-import stat
-import tempfile
-import time
-from datetime import datetime, timedelta
+"""
+Cased CLI Authentication Module
+
+This module provides command-line interface (CLI) functionality for authenticating
+with the Cased system. It includes commands for logging in and out of the Cased
+CLI, handling API key validation, and managing user sessions.
+
+Dependencies:
+    - click: For creating CLI commands
+    - rich: For enhanced console output and user interaction
+    - cased: Custom package for Cased-specific functionality
+
+Commands:
+    - login: Initiates the login process, validates credentials, and stores session information
+    - logout: Removes locally stored credentials and logs the user out of the Cased CLI
+
+The module uses the Rich library to provide a visually appealing and interactive
+console interface, including progress bars and styled text output.
+
+Usage:
+    To use this module, import it into your main CLI application and add the
+    login and logout commands to your command group.
+
+Note:
+    This module assumes the existence of various utility functions and constants
+    from the cased package, which should be properly set up for the module to function correctly.
+
+Author: Cased
+Date: 10/01/2024
+Version: 1.0.0
+"""
 
 import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress
+from rich.prompt import Prompt
 
-from cased.utils.auth import CONFIG_DIR, TOKEN_FILE
+from cased.commands.resources import projects
+from cased.utils.api import validate_tokens
+from cased.utils.auth import validate_credentials
+from cased.utils.config import delete_config, save_config
+from cased.utils.constants import CasedConstants
 
 console = Console()
-
-
-def ensure_config_dir():
-    # Create dir with restricted permissions if it doesn't exist
-    os.makedirs(CONFIG_DIR, mode=0o700, exist_ok=True)
-
-
-def secure_write(file_path, data):
-    ensure_config_dir()
-    # Write data to a file with restricted permissions
-    with open(file_path, "w") as f:
-        json.dump(data, f)
-    os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR)  # Read/write only for the owner
-
-
-def create_temp_token_file(token_data):
-    # Create a temporary file that will be automatically deleted after 24 hours
-    temp_dir = tempfile.gettempdir()
-    temp_file = tempfile.NamedTemporaryFile(
-        mode="w+", delete=False, dir=temp_dir, prefix="cased_token_", suffix=".json"
-    )
-
-    with temp_file:
-        json.dump(token_data, temp_file)
-
-    os.chmod(
-        temp_file.name, stat.S_IRUSR | stat.S_IWUSR
-    )  # Read/write only for the owner
-
-    # Schedule file for deletion after 24 hours
-    deletion_time = datetime.now() + timedelta(hours=24)
-    deletion_command = f"(sleep {(deletion_time - datetime.now()).total_seconds()} && rm -f {temp_file.name}) &"  # noqa: E501
-    os.system(deletion_command)
-
-    return temp_file.name
 
 
 @click.command()
@@ -59,69 +53,78 @@ def login():
     This command initiates a login process, stores a session token,
     and provides information about the session expiration.
     """
+    console.print(Panel("Welcome to Cased CLI", style="bold blue"))
+
+    org_name = Prompt.ask("Enter your organization name")
+    api_key = Prompt.ask("Enter your API key", password=True)
+
     with Progress() as progress:
-        task1 = progress.add_task("[green]Initiating handshake...", total=100)
-        task2 = progress.add_task("[yellow]Authenticating...", total=100)
+        task = progress.add_task("[cyan]Validating credentials...", total=100)
 
-        while not progress.finished:
-            progress.update(task1, advance=100)
-            time.sleep(0.25)
-            progress.update(task2, advance=15)
+        # Simulate API call with progress
+        for i in range(0, 101, 10):
+            progress.update(task, advance=10)
+            if i == 50:
+                response = validate_tokens(api_key, org_name)
+                progress.update(task, completed=100)
 
-    # Simulate getting a session token
-    session_token = "fake_session_token_" + str(random.randint(1000, 9999))
-    expiry = datetime.now() + timedelta(hours=24)  # Token expires in 1 hour
-
-    token_data = {"token": session_token, "expiry": expiry.isoformat()}
-
-    # Create a temporary token file
-    temp_token_file = create_temp_token_file(token_data)
-
-    # Store the path to the temporary file
-    secure_write(TOKEN_FILE, {"temp_file": temp_token_file})
-
-    # Calculate time until expiration
-    time_until_expiry = expiry - datetime.now()
-    hours, remainder = divmod(time_until_expiry.seconds, 3600)
-    minutes, _ = divmod(remainder, 60)
-
-    console.print(
-        Panel(
-            f"[green]Login successful![/green]\nSession token stored securely.\nSession expires in {hours} hours {minutes} minutes.",  # noqa: E501
-            title="Login Status",
-        )
-    )
-
-
-@click.command()
-def logout():
-    """
-    Log out from the Cased system.
-
-    This command removes the stored session token and ends the current session.
-    """
-    if os.path.exists(TOKEN_FILE):
-        with open(TOKEN_FILE, "r") as f:
-            data = json.load(f)
-        temp_file = data.get("temp_file")
-
-        # Remove the temporary token file if it exists
-        if temp_file and os.path.exists(temp_file):
-            os.remove(temp_file)
-
-        # Remove the token file in the config directory
-        os.remove(TOKEN_FILE)
-
+    # 200 would mean success,
+    # 403 would mean validation success but necessary integration is not set up.
+    # (E.g. Github)
+    if response.status_code == 200 or response.status_code == 403:
+        data = response.json()
+    elif response.status_code == 401:
         console.print(
             Panel(
-                "[green]Logout successful![/green]\nSession token has been removed.",
-                title="Logout Status",
+                f"[bold red]Unauthorized:[/bold red] Invalid API token. Please try again or check your API token at {CasedConstants.BASE_URL}/settings/",  # noqa: E501
+                expand=False,
             )
         )
+        return
+    elif response.status_code == 404:
+        console.print(
+            Panel(
+                f"[bold red]Organization not found:[/bold red] Please check your organization name at {CasedConstants.BASE_URL}/settings/",  # noqa: E501
+                expand=False,
+            )
+        )
+        return
+    else:
+        click.echo("Sorry, something went wrong. Please try again later.")
+        return
+
+    if data.get("validation"):
+        org_id = data.get("org_id")
+        data = {
+            CasedConstants.CASED_API_AUTH_KEY: api_key,
+            CasedConstants.CASED_ORG_ID: org_id,
+            CasedConstants.CASED_ORG_NAME: org_name,
+        }
+        save_config(data)
+        console.print(Panel("[bold green]Login successful![/bold green]", expand=False))
+        # Ask user to select a project.
+        ctx = click.get_current_context()
+        ctx.invoke(projects, details=False)
     else:
         console.print(
             Panel(
-                "[yellow]No active session found.[/yellow]\nYou are already logged out.",  # noqa: E501
-                title="Logout Status",
+                f"[bold red]Login failed:[/bold red] {data.get('reason', 'Unknown error')}",
+                title="Error",
+                expand=False,
             )
         )
+
+
+@click.command()
+@validate_credentials(check_project_set=False)
+def logout():
+    """
+    Log out from your Cased account.
+
+    This command removes all locally stored credentials,
+    effectively logging you out of the Cased CLI.
+    """
+    delete_config()
+    console.print(
+        Panel("[bold green]Logged out successfully![/bold green]", expand=False)
+    )

@@ -1,23 +1,60 @@
-import json
-import os
-from datetime import datetime
+from functools import wraps
 
-# Configuration
-CONFIG_DIR = os.path.expanduser("~/.cased/config")
-TOKEN_FILE = os.path.join(CONFIG_DIR, "session_token")
+from rich.console import Console
+from rich.panel import Panel
+
+from cased.utils.config import load_config
+from cased.utils.constants import CasedConstants
+
+console = Console()
 
 
-def get_token():
-    if os.path.exists(TOKEN_FILE):
-        with open(TOKEN_FILE, "r") as f:
-            data = json.load(f)
-        temp_file = data.get("temp_file")
+def validate_credentials(check_project_set=False):
+    def decorator(func):
+        def _validate_config(config):
+            return config and all(
+                [
+                    config.get(CasedConstants.CASED_API_AUTH_KEY),
+                    config.get(CasedConstants.CASED_ORG_ID),
+                ]
+            )
 
-        if temp_file and os.path.exists(temp_file):
-            with open(temp_file, "r") as tf:
-                token_data = json.load(tf)
-                expiry = datetime.fromisoformat(token_data["expiry"])
-                if datetime.now() < expiry:
-                    return token_data["token"]
+        def _validate_project_set(config):
+            return config and all(
+                [
+                    config.get(CasedConstants.CASED_WORKING_PROJECT_NAME),
+                    config.get(CasedConstants.CASED_WORKING_PROJECT_ID),
+                ]
+            )
 
-    return None
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            config = load_config(CasedConstants.ENV_FILE)
+            if not _validate_config(config):
+                console.print(
+                    Panel(
+                        "[bold red]You are not logged in.[/bold red]\nPlease run 'cased login' first.",  # noqa: E501
+                        title="Authentication Error",
+                        expand=False,
+                    )
+                )
+                return
+            elif check_project_set:
+                if not _validate_project_set(config):
+                    console.print(
+                        Panel(
+                            "[bold red]You have not selected a project yet.[/bold red]\nPlease run 'cased projects' first or provide a project name with the --project flag.",  # noqa: E501
+                            title="Project Error",
+                            expand=False,
+                        )
+                    )
+                    return
+                kwargs["project"] = config.get(
+                    CasedConstants.CASED_WORKING_PROJECT_NAME
+                )
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

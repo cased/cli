@@ -6,12 +6,14 @@ import yaml
 from rich.console import Console
 from rich.panel import Panel
 
+from cased.utils.auth import validate_credentials
 from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 
 
 @click.command()
+@validate_credentials(check_project_set=False)
 def init():
     """Initialize a new project configuration."""
     console.print(Panel.fit("Welcome to Cased", style="bold magenta"))

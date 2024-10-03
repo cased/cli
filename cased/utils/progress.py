@@ -16,15 +16,8 @@ def run_process_with_status_bar(
     console = Console()
     result = None
 
-    def update_progress(progress, task):
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            elapsed = int(time.time() - start_time)
-            progress.update(task, completed=min(elapsed, timeout))
-            time.sleep(1)  # Update every second
-
     with Progress() as progress:
-        task = progress.add_task(f"[green]{description}", total=timeout)
+        task = progress.add_task(f"[green]{description}", total=100)
 
         with ThreadPoolExecutor(max_workers=2) as executor:
             # Submit the main process
@@ -32,14 +25,13 @@ def run_process_with_status_bar(
             start_time = time.time()
             while not future.done() and time.time() - start_time < timeout:
                 elapsed = int(time.time() - start_time)
-                progress.update(task, completed=min(elapsed, timeout))
+                steps = (elapsed / timeout) * 100
+                progress.update(task, completed=min(steps, 100))
                 time.sleep(0.1)  # Update frequently for responsiveness
 
             try:
                 result = future.result(timeout=timeout)
-                progress.update(
-                    task, completed=timeout, description="[bold green]Done!"
-                )
+                progress.update(task, completed=100, description="[bold green]Done!")
             except TimeoutError:
                 progress.update(task, description="[bold red]Timeout!")
                 console.print(
