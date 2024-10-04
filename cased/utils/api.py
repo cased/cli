@@ -1,11 +1,9 @@
-import sys
-
-import click
 import requests
 from rich.console import Console
 
 from cased.utils.config import load_config
 from cased.utils.constants import CasedConstants
+from cased.utils.exception import CasedAPIError
 
 console = Console()
 
@@ -28,66 +26,63 @@ class CasedAPI:
             "Accept": "application/json",
         }
 
-    def get_branches(self, project_name, target_name):
-        query_params = {"project_name": project_name, "target_name": target_name}
-        response = requests.get(
-            f"{CasedConstants.API_BASE_URL}/branches",
-            headers=self.request_headers,
+    def _make_request(self, resource_name, method, url, **kwargs):
+        response = requests.request(method, url, headers=self.request_headers, **kwargs)
+        if response.status_code in [200, 201]:
+            return response.json()
+        else:
+            raise CasedAPIError(
+                f"Failed to fetch {resource_name} from {url}",
+                response.status_code,
+                response.json(),
+            )
+
+    def get_branches(self, project_name):
+        query_params = {"project_name": project_name}
+        return self._make_request(
+            resource_name="branches",
+            method="GET",
+            url=f"{CasedConstants.API_BASE_URL}/branches",
             params=query_params,
         )
-        if response.status_code == 200:
-            return response.json()
-        else:
-            click.echo("Failed to fetch branches. Please try again.")
-            sys.exit(1)
 
     def get_projects(self):
-        response = requests.get(
-            f"{CasedConstants.BASE_URL}/deployments", headers=self.request_headers
+        return self._make_request(
+            resource_name="projects",
+            method="GET",
+            url=f"{CasedConstants.BASE_URL}/deployments",
         )
-        if response.status_code == 200:
-            return response.json()
-        else:
-            click.echo("Failed to fetch projects. Please try again.")
-            sys.exit(1)
 
     def get_targets(self, project_name):
         params = {"project_name": project_name}
-        response = requests.get(
-            f"{CasedConstants.API_BASE_URL}/targets",
-            headers=self.request_headers,
+        return self._make_request(
+            resource_name="targets",
+            method="GET",
+            url=f"{CasedConstants.API_BASE_URL}/targets",
             params=params,
         )
-        if response.status_code == 200:
-            return response.json()
-        else:
-            click.echo("Failed to fetch targets. Please try again.")
-            sys.exit(1)
 
-    def get_deployments(self, project_name, target_name):
-        response = requests.get(
-            f"{CasedConstants.API_BASE_URL}/targets/{project_name}/{target_name}/deployments/",
-            headers=self.request_headers,
+    def get_deployments(self, project_name, target_name=None):
+        params = {"project_name": project_name, "target_name": target_name}
+        return self._make_request(
+            resource_name="deployments",
+            method="GET",
+            url=f"{CasedConstants.API_BASE_URL}/deployments",
+            params=params,
         )
-        if response.status_code == 200:
-            return response.json()
-        else:
-            click.echo("Failed to fetch deployments. Please try again.")
-            sys.exit(1)
 
-    def deploy_branch(self, branch_name, target_name):
-        # Implement branch deployment logic here
-        response = requests.post(
-            f"{CasedConstants.API_BASE_URL}/branch-deploys/",
-            json={"branch_name": branch_name, "target_name": target_name},
-            headers=self.request_headers,
+    def deploy_branch(self, project_name, branch_name, target_name):
+        json = {
+            "project_name": project_name,
+            "branch_name": branch_name,
+            "target_name": target_name,
+        }
+        return self._make_request(
+            resource_name="branch_deploy",
+            method="POST",
+            url=f"{CasedConstants.API_BASE_URL}/branch-deploys",
+            json=json,
         )
-        if response.status_code == 200:
-            click.echo(
-                f"Successfully deployed branch '{branch_name}' to target '{target_name}'!"
-            )
-        else:
-            sys.exit(1)
 
     def create_secrets(self, project_name: str, secrets: list):
         payload = {
