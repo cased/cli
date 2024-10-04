@@ -1,18 +1,24 @@
+import sys
+
 import click
 import questionary
 from rich.console import Console
 
 from cased.utils.api import CasedAPI
 from cased.utils.auth import validate_credentials
+from cased.utils.constants import CasedConstants
 from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 
 
-def _build_questionary_choices():
+def _build_questionary_choices(project):
     api_client = CasedAPI()
     data = run_process_with_status_bar(
-        api_client.get_branches, "Fetching branches...", timeout=10
+        api_client.get_branches,
+        f"Fetching branches for project {project}...",
+        timeout=10,
+        project_name=project,
     )
     branches = data.get("pull_requests", [])
     deployable_branches = [
@@ -25,8 +31,10 @@ def _build_questionary_choices():
     ]
 
     if not choices:
-        console.print("[red]No deployable branches available.[/red]")
-        return
+        console.print(
+            f"[red]No branches available for project {project}. Please see more details at {CasedConstants.BASE_URL}/deployments/{project} [/red]"  # noqa: E501
+        )
+        sys.exit(1)
 
     selected = questionary.select("Select a branch to deploy:", choices=choices).ask()
 
@@ -52,10 +60,11 @@ def _build_questionary_choices():
 
 
 @click.command()
+@click.option("--project", help="Project name to deploy")
 @click.option("--branch", help="Branch to deploy")
 @click.option("--target", help="Target environment for deployment")
-@validate_credentials(check_project_set=False)
-def deploy(branch, target):
+@validate_credentials(check_project_set=True)
+def deploy(project, branch, target):
     """
     Deploy a branch to a target environment.
 
@@ -70,14 +79,14 @@ def deploy(branch, target):
         cased deploy --branch feature-branch-1 --target dev
     """  # noqa: E501
     if not branch and not target:
-        branch, target = _build_questionary_choices()
+        branch, target = _build_questionary_choices(project)
 
     console.print(
         f"Preparing to deploy [cyan]{branch}[/cyan] to [yellow]{target}[/yellow]"
     )
 
     if branch and target:
-        CasedAPI().deploy_branch(branch, target)
+        CasedAPI().deploy_branch(project, branch, target)
         console.print("[green]Dispatch succeeded. Starting deployment...[/green]")
     else:
         console.print("[red]Deployment dispatch failed. Please try again later.[/red]")

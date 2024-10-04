@@ -89,6 +89,8 @@ def projects(details=True):
     This command shows a list of available projects and allows you to select one as your current working project.
     If a project is already selected, it will be highlighted in the list.
     The selected project's name and ID are stored as environment variables for future use.
+
+    Use the --details or --d option to show detailed information about each project, by default it is set to True.
     """  # noqa: E501
     # Check if a project is already selected
     config = load_config()
@@ -195,23 +197,8 @@ def deployments(limit, project, target):
     such as begin time, end time, deployer, status, branch, and target.
 
     Use the --limit option to specify the number of deployments to display.
+    Use the --project and --target options to filter deployments by project and target.
     """
-    if not target:
-        targets = CasedAPI().get_targets(project).get("targets", [])
-        if not targets:
-            console.print(
-                f"[yellow]No targets available. You can add a target by going to {CasedConstants.BASE_URL}deployments/{project}/targets/new[/yellow]"  # noqa: E501
-            )
-            return
-
-        selection = questionary.select(
-            "Select a project:", choices=targets, style=custom_style
-        ).ask()
-        if not selection:
-            console.print("[yellow]No target selected.[/yellow]")
-            return
-        target = selection
-
     data = (
         CasedAPI()
         .get_deployments(project_name=project, target_name=target)
@@ -318,9 +305,8 @@ def targets(project):
 @click.command()
 @click.option("--limit", default=5, help="Number of branches to show")
 @click.option("--project", default="", help="Project name to filter branches")
-@click.option("--target", default="", help="Target name to filter branches")
 @validate_credentials(check_project_set=True)
-def branches(limit, project, target):
+def branches(limit, project):
     """
     Display active branches.
 
@@ -328,44 +314,29 @@ def branches(limit, project, target):
     such as name, author, PR number, PR title, deployable status, and various checks.
 
     Use the --limit option to specify the number of branches to display.
+    Use the --project option to filter branches by project.
     """
-    if not target:
-        targets = CasedAPI().get_targets(project).get("targets", [])
-        if not targets:
-            console.print(
-                f"[yellow]No targets available. You can add a target by going to {CasedConstants.BASE_URL+'deployments/'+project+'/targets/new'}[/yellow]"  # noqa: E501
-            )
-            return
-
-        selection = questionary.select(
-            "Select a project:", choices=targets, style=custom_style
-        ).ask()
-        if not selection:
-            console.print("[yellow]No target selected.[/yellow]")
-            return
-        target = selection
-
     data = run_process_with_status_bar(
         CasedAPI().get_branches,
         "Fetching branches...",
         timeout=10,
         project_name=project,
-        target_name=target,
     )
     branches = data.get("pull_requests", [])
+    print(len(branches))
+
+    table = Table(title="Active Branches")
+
+    table.add_column("Name", style="cyan")
+    table.add_column("Author", style="magenta")
+    table.add_column("PR Number", style="yellow")
+    table.add_column("PR Title", style="green")
+    table.add_column("Deployable", style="blue")
+    table.add_column("Mergeable", style="blue")
+    table.add_column("Checks", style="cyan")
     for idx, branch in enumerate(branches):
         if idx == limit:
             break
-
-        table = Table(title="Active Branches")
-
-        table.add_column("Name", style="cyan")
-        table.add_column("Author", style="magenta")
-        table.add_column("PR Number", style="yellow")
-        table.add_column("PR Title", style="green")
-        table.add_column("Deployable", style="blue")
-        table.add_column("Mergeable", style="blue")
-        table.add_column("Checks", style="cyan")
 
         table.add_row(
             branch.get("branch_name"),
