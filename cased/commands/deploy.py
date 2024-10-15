@@ -32,7 +32,7 @@ def _build_questionary_choices(project):
 
     if not choices:
         console.print(
-            f"[red]No branches available for project {project}. Please see more details at {CasedConstants.BASE_URL}/deployments/{project} [/red]"  # noqa: E501
+            f"[red]No deployable branches for project {project}. Please see more details at {CasedConstants.BASE_URL}/deployments/{project} [/red]"  # noqa: E501
         )
         sys.exit(1)
 
