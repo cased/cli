@@ -21,8 +21,7 @@ class CasedAPI:
     def __init__(self):
         configs = load_config(CasedConstants.ENV_FILE)
         self.request_headers = {
-            "X-CASED-API-KEY": str(configs.get(CasedConstants.CASED_API_AUTH_KEY)),
-            "X-CASED-ORG-ID": str(configs.get(CasedConstants.CASED_ORG_ID)),
+            "Authorization": f"Bearer {str(configs.get(CasedConstants.CASED_API_AUTH_KEY))}",
             "Accept": "application/json",
         }
 
