@@ -15,7 +15,7 @@ console = Console()
 @click.command()
 @validate_credentials(check_project_set=False)
 def init():
-    """Initialize a new project configuration."""
+    """Initialize a new project configuration (alpha)"""
     console.print(Panel.fit("Welcome to Cased", style="bold magenta"))
 
     config = {}
