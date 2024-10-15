@@ -19,6 +19,7 @@ def save_config(
 ):
     os.makedirs(config_dir, mode=0o700, exist_ok=True)
     current_config = load_config(file_name)
+
     if not current_config:
         current_config = {}
     current_config.update(data)

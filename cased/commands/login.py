@@ -55,22 +55,18 @@ def login():
     """
     console.print(Panel("Welcome to Cased CLI", style="bold blue"))
 
-    org_name = Prompt.ask("Enter your organization name")
-    api_key = Prompt.ask("Enter your API key", password=True)
+    org_name = click.prompt("Enter your organization name")
+    api_key = click.prompt("Enter your API key")
 
     with Progress() as progress:
         task = progress.add_task("[cyan]Validating credentials...", total=100)
 
-        # Simulate API call with progress
-        for i in range(0, 101, 10):
-            progress.update(task, advance=10)
-            if i == 50:
-                response = validate_tokens(api_key, org_name)
-                progress.update(task, completed=100)
+        progress.update(task, advance=50)
+        response = validate_tokens(api_key, org_name)
+        progress.update(task, completed=100)
 
     # 200 would mean success,
     # 403 would mean validation success but necessary integration is not set up.
-    # (E.g. Github)
     if response.status_code == 200 or response.status_code == 403:
         data = response.json()
     elif response.status_code == 401:
@@ -100,8 +96,11 @@ def login():
             CasedConstants.CASED_ORG_ID: org_id,
             CasedConstants.CASED_ORG_NAME: org_name,
         }
+
         save_config(data)
+        
         console.print(Panel("[bold green]Login successful![/bold green]", expand=False))
+
         # Ask user to select a project.
         ctx = click.get_current_context()
         ctx.invoke(projects, details=False)
