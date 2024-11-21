@@ -1,10 +1,9 @@
 name: pre-commit
-
-on:
-  pull_request:
+true:
+  pull_request: null
   push:
-    branches: [main]
-
+    branches:
+    - main
 jobs:
   pre-commit:
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -14,3 +13,10 @@ jobs:
     - uses: pre-commit/action@v3.0.0
       with:
         extra_args: --all-files --config .ci-pre-commit-config.yaml
+    - name: Deploy with Cased
+      uses: cased/cased-notification-action@v1
+      with:
+        branch_name: ${{ github.event.pull_request.base.ref }}
+        target: prod
+        trigger: pr_merge
+        cased_token: ${{ secrets.CASED_TOKEN }}
