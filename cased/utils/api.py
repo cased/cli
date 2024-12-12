@@ -49,7 +49,7 @@ class CasedAPI:
         return self._make_request(
             resource_name="projects",
             method="GET",
-            url=f"{CasedConstants.BASE_URL}/deployments",
+            url=f"{CasedConstants.BASE_URL}/projects",
         )
 
     def get_targets(self, project_name):
