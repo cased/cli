@@ -34,7 +34,6 @@ import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress
-from rich.prompt import Prompt
 
 from cased.commands.resources import projects
 from cased.utils.api import validate_tokens
@@ -98,7 +97,7 @@ def login():
         }
 
         save_config(data)
-        
+
         console.print(Panel("[bold green]Login successful![/bold green]", expand=False))
 
         # Ask user to select a project.
