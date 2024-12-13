@@ -21,7 +21,6 @@ def _build_questionary_choices(project):
         project_name=project,
     )
     branches = data.get("pull_requests", [])
-    print(branches)
     deployable_branches = [
         branch for branch in branches if branch["deployable"] is True
     ]
@@ -39,6 +38,10 @@ def _build_questionary_choices(project):
 
     selected = questionary.select("Select a branch to deploy:", choices=choices).ask()
 
+    if not selected:
+        console.print("[red]Error: No branch selected.[/red]")
+        sys.exit(1)
+
     branch = selected.split(" -> ")[0]
 
     # Find the selected branch in our data
@@ -47,12 +50,12 @@ def _build_questionary_choices(project):
     )
     if not selected_branch:
         console.print(f"[red]Error: Branch {branch} is not deployable.[/red]")
-        return
+        sys.exit(1)
 
     available_targets = selected_branch["targets"]
     if not available_targets:
         console.print(f"[red]Error: No targets available for branch {branch}.[/red]")
-        return
+        sys.exit(1)
     target = questionary.select(
         "Select a target environment:", choices=available_targets
     ).ask()

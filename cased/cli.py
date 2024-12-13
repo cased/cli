@@ -32,4 +32,7 @@ cli.add_command(targets)
 
 
 if __name__ == "__main__":
-    cli()
+    try:
+        cli()
+    except Exception as _:
+        click.echo("\nProcess interrupted. Exiting.")
