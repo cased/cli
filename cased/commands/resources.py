@@ -114,7 +114,6 @@ def projects(details=True):
 
     if details:
         table = Table(title="Projects Details", box=box.ROUNDED)
-        table.add_column("ID", style="cyan", no_wrap=True)
         table.add_column("Repository", style="magenta")
         table.add_column("Code Host", style="green")
         table.add_column("Latest Deployment", style="yellow")
@@ -122,7 +121,6 @@ def projects(details=True):
         for project in projects:
             row_style = "bold" if str(project["id"]) == current_project_id else ""
             table.add_row(
-                str(project["id"]),
                 project["repository_full_name"],
                 project["code_host"],
                 project["latest_deployment"],
@@ -143,7 +141,7 @@ def projects(details=True):
     choices = ["Exit without changing project"]
     choices.extend(
         [
-            f"{project['id']} - {project['repository_full_name']} ({project['code_host']})"
+            f"{project['repository_full_name']} ({project['code_host']})"
             for project in projects
         ]
     )
