@@ -1,0 +1,10 @@
+# .gitignore
+_pycache_/
+__pycache__/
+.egg-info/
+env/
+.env/
+venv/
+.DS_STORE
+.pre-commit-config.yaml
+.pem

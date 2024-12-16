@@ -1,0 +1,52 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+      target_name:
+        description: 'Target name'
+        required: true
+        default: 'prod'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '{{ config.environment.python_version }}'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install {{ config.environment.dependency_manager }}
+        {{ config.environment.dependency_manager }} install
+
+    - name: Run tests
+      run: |
+        # Add your test commands here
+
+    - name: Deploy to EC2
+      env:
+        PRIVATE_KEY: {% raw %}${{ secrets.EC2_SSH_PRIVATE_KEY }}{% endraw %}
+        EC2_PUBLIC_IP: {% raw %}${{ secrets.EC2_PUBLIC_IP }}{% endraw %}
+      run: |
+        echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+        scp -i private_key -o StrictHostKeyChecking=no -r ./* ec2-user@$EC2_PUBLIC_IP:~/app
+        ssh -i private_key -o StrictHostKeyChecking=no ec2-user@$EC2_PUBLIC_IP '
+          cd ~/app
+          {{ config.runtime.commands.stop }}
+          {{ config.runtime.commands.start }}
+        '
