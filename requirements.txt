@@ -33,4 +33,4 @@ six==1.16.0
 urllib3==2.2.3
 virtualenv==20.26.6
 wcwidth==0.2.13
-xmod==1.8.1 
+xmod==1.8.1

@@ -88,7 +88,7 @@ def get_deployment_info():
 
 def check_for_docker(config):
     def find_dockerfile(start_path="."):
-        for root, dirs, files in os.walk(start_path):
+        for root, _, files in os.walk(start_path):
             if "Dockerfile" in files:
                 return os.path.join(root, "Dockerfile")
         return None
