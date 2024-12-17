@@ -17,7 +17,7 @@ Cased CLI is a powerful command-line interface tool designed to streamline deplo
 You can install the Cased CLI tool using pip:
 
 ```
-pip install cased
+pip install cased-cli
 ```
 
 This will install the latest version of the tool from PyPI.
