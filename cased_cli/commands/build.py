@@ -5,14 +5,13 @@ from typing import Any, Dict, List
 
 import click
 import yaml
+from cased.utils.api import CasedAPI
+from cased.utils.constants import CasedConstants
+from cased.utils.git import get_repo_name
 from jinja2 import Environment, FileSystemLoader
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
-
-from cased.utils.api import CasedAPI
-from cased.utils.constants import CasedConstants
-from cased.utils.git import get_repo_name
 
 console = Console()
 # Get the directory of the current script

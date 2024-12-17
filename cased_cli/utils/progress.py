@@ -3,10 +3,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from typing import Any, Callable
 
+from cased.utils.exception import CasedAPIError
 from rich.console import Console
 from rich.progress import Progress
-
-from cased.utils.exception import CasedAPIError
 
 
 def run_process_with_status_bar(

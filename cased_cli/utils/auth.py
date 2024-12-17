@@ -1,10 +1,9 @@
 from functools import wraps
 
-from rich.console import Console
-from rich.panel import Panel
-
 from cased.utils.config import load_config
 from cased.utils.constants import CasedConstants
+from rich.console import Console
+from rich.panel import Panel
 
 console = Console()
 

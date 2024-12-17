@@ -3,11 +3,10 @@ import os
 import click
 import inquirer
 import yaml
-from rich.console import Console
-from rich.panel import Panel
-
 from cased.utils.auth import validate_credentials
 from cased.utils.progress import run_process_with_status_bar
+from rich.console import Console
+from rich.panel import Panel
 
 console = Console()
 

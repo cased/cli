@@ -31,15 +31,14 @@ Version: 1.0.0
 """
 
 import click
-from rich.console import Console
-from rich.panel import Panel
-from rich.progress import Progress
-
 from cased.commands.resources import projects
 from cased.utils.api import validate_tokens
 from cased.utils.auth import validate_credentials
 from cased.utils.config import delete_config, save_config
 from cased.utils.constants import CasedConstants
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress
 
 console = Console()
 

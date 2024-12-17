@@ -34,6 +34,11 @@ Version: 1.0.0
 
 import click
 import questionary
+from cased.utils.api import CasedAPI
+from cased.utils.auth import validate_credentials
+from cased.utils.config import load_config, save_config
+from cased.utils.constants import CasedConstants
+from cased.utils.progress import run_process_with_status_bar
 from dateutil import parser
 from questionary import Style
 from rich import box
@@ -41,12 +46,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
-
-from cased.utils.api import CasedAPI
-from cased.utils.auth import validate_credentials
-from cased.utils.config import load_config, save_config
-from cased.utils.constants import CasedConstants
-from cased.utils.progress import run_process_with_status_bar
 
 console = Console()
 

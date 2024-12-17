@@ -1,5 +1,4 @@
 import click
-
 from cased.commands.build import build
 from cased.commands.deploy import deploy
 from cased.commands.init import init
