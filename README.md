@@ -61,7 +61,7 @@ cased --help
 
 - `cased init` - Initialize a new project configuration
 - `cased login` - Authenticate with Cased services
-- `cased build` - Build your project according to configuration
+- `cased build` - Build your project according to configuration (experimental)
 - `cased deploy` - Deploy your project to the specified environment
 
 For detailed help on any command:
@@ -90,4 +90,4 @@ For issues and feature requests, please open an issue on GitHub.
 
 ## License
 
-[License information here]
+MIT
