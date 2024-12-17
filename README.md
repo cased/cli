@@ -17,6 +17,14 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ### Installing the CLI
 
+You can install the CLI from the PyPI repository:
+
+```bash
+uv pip install cased-cli
+```
+
+Or you can install the CLI from the source code:
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/cased/cli
@@ -60,50 +68,6 @@ For detailed help on any command:
 ```bash
 cased COMMAND --help
 ```
-
-## Development
-
-### Setting up the Development Environment
-
-1. Install development dependencies:
-```bash
-uv pip install pre-commit ruff isort
-```
-
-2. Install pre-commit hooks:
-```bash
-pre-commit install
-```
-
-### Code Style
-
-This project uses:
-- Ruff for linting and formatting
-- isort for import sorting
-- pre-commit for git hooks
-
-Configuration for these tools can be found in:
-- `pyproject.toml` - Ruff configuration
-- `.ci-pre-commit-config.yaml` - Pre-commit hooks
-
-To check code style:
-```bash
-pre-commit run --all-files
-```
-
-### Making Changes
-
-1. Create a new branch:
-```bash
-git checkout -b feature/your-feature-name
-```
-
-2. Make your changes and ensure all checks pass:
-```bash
-pre-commit run --all-files
-```
-
-3. Submit a pull request with your changes
 
 ## Configuration
 
