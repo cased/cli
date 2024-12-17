@@ -1,108 +1,129 @@
 # Cased CLI
 
-## Overview
-
-Cased CLI is a powerful command-line interface tool designed to streamline deployment processes and manage branches efficiently. It provides an intuitive way to interact with the Cased system, offering functionalities such as user authentication, deployment management, and branch oversight.
-
-## Features
-
-- User authentication (login/logout)
-- View recent deployments
-- Display active branches
-- Interactive deployment process with branch and target selection
-- Comprehensive help system
+A CLI tool for managing cloud infrastructure deployments and configurations.
 
 ## Installation
 
-You can install the Cased CLI tool using pip:
+### Prerequisites
 
-```
-pip install cased-cli
+- Python 3.12 or higher
+- uv package manager
+
+### Installing uv
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-This will install the latest version of the tool from PyPI.
+### Installing the CLI
+
+1. Clone the repository:
+```bash
+git clone https://github.com/cased/cli
+cd cli
+```
+
+2. Create and activate a virtual environment:
+```bash
+uv venv
+source .venv/bin/activate  # On Unix/macOS
+# or
+.venv\Scripts\activate     # On Windows
+```
+
+3. Install dependencies:
+```bash
+uv pip install -r requirements.txt
+```
+
+4. Install the CLI in development mode:
+```bash
+uv pip install -e .
+```
 
 ## Usage
 
-After installation, you can use the CLI tool by running `cased` followed by a command:
+After installation, you can use the CLI with the `cased` command:
 
-```
+```bash
 cased --help
 ```
 
-### Available Commands:
+### Available Commands
 
-- `cased login`: Log in to the Cased system
-- `cased logout`: Log out from the Cased system
-- `cased deployments`: View recent deployments
-- `cased branches`: View active branches
-- `cased deploy`: Deploy a branch to a target environment
+- `cased init` - Initialize a new project configuration
+- `cased login` - Authenticate with Cased services
+- `cased build` - Build your project according to configuration
+- `cased deploy` - Deploy your project to the specified environment
 
-For more details on each command, use:
-
-```
+For detailed help on any command:
+```bash
 cased COMMAND --help
 ```
 
 ## Development
 
-To set up the Cased CLI for development:
+### Setting up the Development Environment
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/cased/cli.git
-   cd cli
-   ```
+1. Install development dependencies:
+```bash
+uv pip install pre-commit ruff isort
+```
 
-2. Install Poetry (if not already installed):
-   ```
-   pip install poetry
-   ```
+2. Install pre-commit hooks:
+```bash
+pre-commit install
+```
 
-3. Install dependencies:
-   ```
-   poetry install
-   ```
+### Code Style
 
-4. Activate the virtual environment:
-   ```
-   poetry shell
-   ```
+This project uses:
+- Ruff for linting and formatting
+- isort for import sorting
+- pre-commit for git hooks
 
-5. Run the CLI in development mode:
-   ```
-   poetry run cased
-   ```
+Configuration for these tools can be found in:
+- `pyproject.toml` - Ruff configuration
+- `.ci-pre-commit-config.yaml` - Pre-commit hooks
+
+To check code style:
+```bash
+pre-commit run --all-files
+```
 
 ### Making Changes
 
-1. Make your changes to the codebase.
-2. Update tests if necessary.
-3. Run tests:
-   ```
-   poetry run pytest
-   ```
-4. Build the package:
-   ```
-   poetry build
-   ```
+1. Create a new branch:
+```bash
+git checkout -b feature/your-feature-name
+```
 
-### Submitting Changes
+2. Make your changes and ensure all checks pass:
+```bash
+pre-commit run --all-files
+```
 
-1. Create a new branch for your changes:
-   ```
-   git checkout -b feature/your-feature-name
-   ```
-2. Commit your changes:
-   ```
-   git commit -am "Add your commit message"
-   ```
-3. Push to your branch:
-   ```
-   git push origin feature/your-feature-name
-   ```
-4. Create a pull request on GitHub.
+3. Submit a pull request with your changes
 
-## Contact
+## Configuration
 
-For any questions or support, please contact cli@cased.com
+The CLI stores configuration in `~/.cased/config/env`. You can configure:
+
+- API authentication
+- Organization settings
+- Project configurations
+
+## Environment Variables
+
+- `CASED_API_AUTH_KEY` - Your API authentication key
+- `CASED_ORG_ID` - Your organization ID
+- `CASED_ORG_NAME` - Your organization name
+- `CASED_BASE_URL` - API base URL (defaults to https://app.cased.com)
+
+## Support
+
+For issues and feature requests, please open an issue on GitHub.
+
+## License
+
+[License information here]
