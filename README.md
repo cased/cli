@@ -52,18 +52,23 @@ uv pip install -e .
 
 ## Usage
 
-After installation, you can use the CLI with the `cased` command:
+After installation, explore the CLI with the `cased` command:
 
 ```bash
 cased --help
 ```
 
-### Available Commands
+### Key Commands
 
-- `cased init` - Initialize a new project configuration
-- `cased login` - Authenticate with Cased services
-- `cased build` - Build your project according to configuration (experimental)
-- `cased deploy` - Deploy your project to the specified environment
+* `cased branches` - Display active branches
+* `cased build` - Generate a GitHub Actions workflow based on the configuration
+* `cased deploy` - Deploy a branch to a target environment
+* `cased deployments` - Display recent deployments
+* `cased init` - Initialize a new project configuration (alpha)
+* `cased login` - Log in to the Cased system
+* `cased logout` - Log out from your Cased account
+* `cased projects` - Display and select Cased projects
+* `cased targets` - Display target environments
 
 For detailed help on any command:
 ```bash
