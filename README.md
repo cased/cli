@@ -1,6 +1,6 @@
 # Cased CLI
 
-A CLI tool for managing cloud infrastructure deployments and configurations with [Cased](cased.com).
+A CLI tool for managing cloud infrastructure deployments and configurations with [Cased](https://cased.com).
 
 ## Installation
 
@@ -8,7 +8,7 @@ A CLI tool for managing cloud infrastructure deployments and configurations with
 
 - Python 3.12 or higher
 - uv package manager
-- [A Cased account](app.cased.com)
+- [A Cased account](https://app.cased.com)
 
 ### Installing uv
 
