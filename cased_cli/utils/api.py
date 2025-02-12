@@ -1,7 +1,7 @@
 import requests
-from cased.utils.config import load_config
-from cased.utils.constants import CasedConstants
-from cased.utils.exception import CasedAPIError
+from cased_cli.utils.config import load_config
+from cased_cli.utils.constants import CasedConstants
+from cased_cli.utils.exception import CasedAPIError
 from rich.console import Console
 
 console = Console()

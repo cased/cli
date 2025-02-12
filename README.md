@@ -1,6 +1,6 @@
 # Cased CLI
 
-A CLI tool for managing cloud infrastructure deployments and configurations with [Cased](https://cased.com).
+A CLI tool for managing cloud infrastructure deployments and configurations with [Cased](https://cased_cli.com).
 
 ## Installation
 
@@ -8,7 +8,7 @@ A CLI tool for managing cloud infrastructure deployments and configurations with
 
 - Python 3.12 or higher
 - uv package manager
-- [A Cased account](https://app.cased.com)
+- [A Cased account](https://app.cased_cli.com)
 
 ### Installing uv
 
@@ -88,7 +88,7 @@ The CLI stores configuration in `~/.cased/config/env`. You can configure:
 - `CASED_API_AUTH_KEY` - Your API authentication key
 - `CASED_ORG_ID` - Your organization ID
 - `CASED_ORG_NAME` - Your organization name
-- `CASED_BASE_URL` - API base URL (defaults to https://app.cased.com)
+- `CASED_BASE_URL` - API base URL (defaults to https://app.cased_cli.com)
 
 ## Support
 

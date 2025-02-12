@@ -14,7 +14,7 @@ class CasedConstants:
     CASED_ORG_ID = "CASED_ORG_ID"
     CASED_ORG_NAME = "CASED_ORG_NAME"
 
-    BASE_URL = os.environ.get("CASED_BASE_URL", default="https://app.cased.com")
+    BASE_URL = os.environ.get("CASED_BASE_URL", default="https://app.cased_cli.com")
     API_BASE_URL = BASE_URL + "/api/v1"
 
     # Project related constants

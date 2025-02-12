@@ -3,7 +3,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from typing import Any, Callable
 
-from cased.utils.exception import CasedAPIError
+from cased_cli.utils.exception import CasedAPIError
 from rich.console import Console
 from rich.progress import Progress
 

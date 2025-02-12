@@ -34,11 +34,11 @@ Version: 1.0.0
 
 import click
 import questionary
-from cased.utils.api import CasedAPI
-from cased.utils.auth import validate_credentials
-from cased.utils.config import load_config, save_config
-from cased.utils.constants import CasedConstants
-from cased.utils.progress import run_process_with_status_bar
+from cased_cli.utils.api import CasedAPI
+from cased_cli.utils.auth import validate_credentials
+from cased_cli.utils.config import load_config, save_config
+from cased_cli.utils.constants import CasedConstants
+from cased_cli.utils.progress import run_process_with_status_bar
 from dateutil import parser
 from questionary import Style
 from rich import box

@@ -1,6 +1,6 @@
 import os
 
-from cased.utils.constants import CasedConstants
+from cased_cli.utils.constants import CasedConstants
 
 
 def load_config(file_path=CasedConstants.ENV_FILE):
