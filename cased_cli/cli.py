@@ -1,9 +1,9 @@
 import click
-from cased.commands.build import build
-from cased.commands.deploy import deploy
-from cased.commands.init import init
-from cased.commands.login import login, logout
-from cased.commands.resources import branches, deployments, projects, targets
+from cased_cli.commands.build import build
+from cased_cli.commands.deploy import deploy
+from cased_cli.commands.init import init
+from cased_cli.commands.login import login, logout
+from cased_cli.commands.resources import branches, deployments, projects, targets
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -29,6 +29,7 @@ cli.add_command(branches)
 cli.add_command(projects)
 cli.add_command(targets)
 
+main = cli
 
 if __name__ == "__main__":
     try:

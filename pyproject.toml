@@ -47,7 +47,7 @@ dependencies = [
 ]
 
 [project.scripts]
-cased = "cased.cli:main"
+cased = "cased_cli.cli:main"
 
 [tool.ruff]
 line-length = 88
