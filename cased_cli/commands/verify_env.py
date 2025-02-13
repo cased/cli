@@ -43,8 +43,6 @@ class EnvChecker:
     def __init__(self, verbose=False):
         self.temp_dir = tempfile.mkdtemp()
         self.env_vars_file = Path(self.temp_dir) / "env_example_vars.txt"
-        self.sys_vars_file = Path(self.temp_dir) / "system_env_vars.txt"
-        self.settings_vars_file = Path(self.temp_dir) / "settings_vars.txt"
         self.verbose = verbose
         self.cwd = Path.cwd()
 
