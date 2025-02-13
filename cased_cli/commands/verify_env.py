@@ -173,7 +173,7 @@ class EnvChecker:
 
 @click.command()
 @click.option('-v', '--verbose', is_flag=True, help='Show detailed information about the scan')
-def check_env(verbose):
+def verify_env(verbose):
     """Check for missing required environment variables in the current directory."""
     checker = EnvChecker(verbose=verbose)
     try:
