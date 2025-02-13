@@ -15,26 +15,9 @@ class EnvChecker:
         "**/env.py",
     ]
 
-    TYPESCRIPT_PATHS = [
-        "**/config/*.ts",
-        "**/env.ts",
-        "**/environment.ts",
-        "vite.config.ts",
-        "next.config.js",
-        ".env.ts"
-    ]
-
-    GO_PATHS = [
-        "**/config/*.go",
-        "**/cmd/*.go",
-        "main.go",
-        "**/env/*.go"
-    ]
-
     EXCLUDE_PATTERNS = [
         "*/.*",
         "*/venv/*",
-        "*/node_modules/*",
         "*/__pycache__/*",
         "*/dist/*",
         "*/.git/*"
@@ -66,28 +49,10 @@ class EnvChecker:
                     var = line.split('=')[0].strip()
                     out.write(f"{var}\n")
 
-    def write_system_vars(self):
-        """Get current environment variables excluding system ones."""
-        system_vars = {
-            'SHELL=', 'USER=', 'PATH=', 'PWD=', 'HOME=', 'LANG=', 'LC_',
-            'TERM=', 'COMMAND_MODE=', 'SHLVL=', '_=', 'XPC_', 'SSH_',
-            'COLORTERM=', 'TERM_PROGRAM=', 'OLDPWD=', 'ZSH=', 'PAGER=',
-            'LESS=', 'LOGNAME=', 'DISPLAY=', 'SECURITYSESSIONID=', 'TMPDIR='
-        }
+    def scan_files(self, pattern: str) -> set:
+        """Scan Python files for environment variables and return found vars."""
+        python_pattern = r"os\.environ\.get\(['\"]([A-Z_]*)['\"].*?\)|os\.environ\[['\"]([A-Z_]*)['\"]|os\.getenv\(['\"]([A-Z_]*)['\"]"
         
-        with open(self.sys_vars_file, 'w') as f:
-            for var in sorted(os.environ):
-                if not any(var.startswith(s.rstrip('=')) for s in system_vars):
-                    f.write(f"{var}\n")
-
-    def scan_files(self, pattern: str, lang: str) -> set:
-        """Scan files for environment variables and return found vars."""
-        patterns = {
-            "python": r"os\.environ\.get\(['\"]([A-Z_]*)['\"].*?\)|os\.environ\[['\"]([A-Z_]*)['\"]|os\.getenv\(['\"]([A-Z_]*)['\"]",
-            "typescript": r"process\.env\.([A-Z_]*)|process\.env\[['\"]([A-Z_]*)['\"]|env\(['\"]([A-Z_]*)['\"]",
-            "go": r"os\.Getenv\(['\"]([A-Z_]*)['\"]|os\.Setenv\(['\"]([A-Z_]*)['\"]|viper\.Get\w*\(['\"]([A-Z_]*)['\"]"
-        }
-
         found_vars = set()
         for file in self.cwd.glob(pattern.lstrip('/')):
             if any(file.match(exclude) for exclude in self.EXCLUDE_PATTERNS):
@@ -96,7 +61,7 @@ class EnvChecker:
             try:
                 with open(file) as f:
                     content = f.read()
-                    matches = re.finditer(patterns[lang], content)
+                    matches = re.finditer(python_pattern, content)
                     for match in matches:
                         var_name = next((g for g in match.groups() if g), None)
                         if var_name:
@@ -135,14 +100,9 @@ class EnvChecker:
             print("[yellow]⚠️  No variables found in .env.example[/yellow]")
             return False
 
-        # Get all variables from settings files
         settings_vars = set()
         for pattern in self.PYTHON_PATHS:
-            settings_vars.update(self.scan_files(pattern, "python"))
-        for pattern in self.TYPESCRIPT_PATHS:
-            settings_vars.update(self.scan_files(pattern, "typescript"))
-        for pattern in self.GO_PATHS:
-            settings_vars.update(self.scan_files(pattern, "go"))
+            settings_vars.update(self.scan_files(pattern))
 
         # Get current OS environment variables (excluding system ones)
         system_vars = {
