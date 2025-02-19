@@ -4,6 +4,7 @@ from cased_cli.commands.deploy import deploy
 from cased_cli.commands.init import init
 from cased_cli.commands.login import login, logout
 from cased_cli.commands.resources import branches, deployments, projects, targets
+from cased_cli.commands.verify_env import verify_env
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
@@ -28,6 +29,7 @@ cli.add_command(deployments)
 cli.add_command(branches)
 cli.add_command(projects)
 cli.add_command(targets)
+cli.add_command(verify_env)
 
 main = cli
 
