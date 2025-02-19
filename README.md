@@ -69,6 +69,7 @@ cased --help
 * `cased logout` - Log out from your Cased account
 * `cased projects` - Display and select Cased projects
 * `cased targets` - Display target environments
+* `cased verify_env` - Check for missing required environment variables in the current directory
 
 For detailed help on any command:
 ```bash
