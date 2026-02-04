@@ -1,0 +1,8 @@
+# Binary
+cased
+cased.exe
+
+# Go
+*.test
+*.out
+coverage.txt
